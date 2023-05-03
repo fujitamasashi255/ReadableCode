@@ -1,0 +1,11 @@
+FROM ruby:3.2.2
+
+# bundlerを最新状態にする
+RUN gem install bundler
+
+WORKDIR /app
+
+# gemはvendor/bundleにインストール
+RUN bundle config set path 'vendor/bundle'
+
+CMD ["bash"]

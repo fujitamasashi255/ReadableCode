@@ -1,0 +1,20 @@
+name: ci
+on: push
+jobs:
+  execute_ci:
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Docker Compose
+        uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: "./docker-compose.yml"
+          down-flags: "--volumes"
+      - name: Setup test environment
+        run: "docker compose exec app bin/setup"
+      - name: Run ci
+        run: "docker compose exec app bin/ci"
+    

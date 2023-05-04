@@ -18,5 +18,11 @@ module LetsReadableCode
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # every time rails generate, run rubocop auto-correct command
+    # to prepend "# frozen_string_literal: true" to created file
+    config.generators.after_generate do |files|
+      system("bundle exec rubocop --auto-correct-all " + files.join(" "), exception: true)
+    end
   end
 end

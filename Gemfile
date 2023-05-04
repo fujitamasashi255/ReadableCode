@@ -62,6 +62,17 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+
+  # analyzes our code for security vulnerabilities
+  gem "brakeman", require: false
+
+  # checks our dependencies for vulnerabilities
+  gem "bundler-audit", require: false
+
+  # static analyze our code
+  gem "rubocop", require: false
+  gem "rubocop-performance", require: false
+  gem "rubocop-rails", require: false
 end
 
 group :test do

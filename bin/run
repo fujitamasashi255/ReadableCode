@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Docker container port forwarding
+bin/rails server --binding=0.0.0.0

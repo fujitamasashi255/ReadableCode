@@ -26,6 +26,8 @@ jobs:
       - name: Login ECR
         uses: aws-actions/amazon-ecr-login@v1
         id: amazon-ecr-login
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Push rails image to ECR
         env:
           DOCKER_BUILDKIT: 1
@@ -37,6 +39,7 @@ jobs:
             --build-arg BUILDKIT_INLINE_CACHE=1 \
             -f Dockerfile-prod \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

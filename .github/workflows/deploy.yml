@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - create_workflow_to_deploy_docker_image_to_ECR
 
 jobs:
   deploy:

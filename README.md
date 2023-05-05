@@ -1,24 +1,11 @@
-# README
+# Let's Readable Code
+## Setup
+1. `docker compose up`
+2. `docker compose exec app bash`
+3. `bin/setup`
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Running The App
+1. `bin/run`
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Tests and CI
+1. `bin/ci` contains all the tests and checks for the app

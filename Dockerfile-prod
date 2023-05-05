@@ -1,0 +1,18 @@
+FROM ruby:3.2.2
+
+# bundlerを最新状態にする
+RUN gem install bundler
+
+WORKDIR /app
+ENV RAILS_ENV=production
+
+COPY Gemfile Gemfile.lock /app/
+RUN bundle install
+
+COPY . /app
+
+RUN bin/rails assets:precompile
+
+VOLUME /app/public
+
+CMD ["bin/rails", "s", "-b", "0.0.0.0"]

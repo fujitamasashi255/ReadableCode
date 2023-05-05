@@ -1,0 +1,12 @@
+README
+Dockerfile-dev
+Dockerfile-prod
+.docker-compose.yml
+.git
+
+log/*
+tmp/*
+storage/*
+
+.bundle
+vendor/bundle

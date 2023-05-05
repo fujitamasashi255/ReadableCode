@@ -2,7 +2,6 @@ FROM ruby:3.2.2
 
 # bundlerを最新状態にする
 RUN gem install bundler
-ENV RAILS_ENV=development
 
 WORKDIR /app
 

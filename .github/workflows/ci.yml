@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - '**'
-      - '!master'
+      - '!main'
 jobs:
   execute_ci:
     runs-on: ubuntu-latest

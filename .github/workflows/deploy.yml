@@ -1,0 +1,44 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy app to AWS Fargate
+    env: 
+      ENV_NAME: prod
+      AWS_REGION: ap-northeast-1
+      IMAGE_TAG: ${{ github.sha }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure aws credentials for prod
+        uses: aws-actions/configure-aws-credentials@v1
+        with: 
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.RPOD_AWS_ASSUME_ROLE_ARN }}
+          role-duration-seconds: 1800
+      - name: Login ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        id: amazon-ecr-login
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Push rails image to ECR
+        env:
+          DOCKER_BUILDKIT: 1
+          ECR_REGISTRY: ${{ steps.amazon-ecr-login.outputs.registry }}
+          ECR_REPOSITORY: prod-rails
+        run: |
+          docker build \
+            --cache-from=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            -f Dockerfile-prod \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile-dev
+      dockerfile: dockerfile/rails/Dockerfile-dev
     stdin_open: true
     environment:
       MYSQL_USERNAME: root

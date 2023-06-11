@@ -36,7 +36,7 @@ jobs:
           docker build \
             --cache-from=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
-            -f Dockerfile-prod \
+            -f docker/rails/Dockerfile-prod \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
             .

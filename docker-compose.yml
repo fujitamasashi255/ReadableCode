@@ -14,7 +14,7 @@ services:
       - mysql
     volumes: 
       - .:/app:cached
-      - lets-readable-code-bundle:/app/vendor/bundle
+      - readable-coder-bundle:/app/vendor/bundle
     ports:
       - "3000:3000"
   
@@ -30,6 +30,6 @@ services:
       - mysql-data:/var/lib/mysql
 
 volumes:
-  lets-readable-code-bundle:
+  readable-coder-bundle:
   mysql-data:
     

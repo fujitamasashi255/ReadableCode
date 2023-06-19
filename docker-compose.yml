@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile-dev
+      dockerfile: docker/rails/Dockerfile-dev
     stdin_open: true
     environment:
       MYSQL_USERNAME: root
@@ -12,12 +12,27 @@ services:
       MYSQL_HOST: mysql
     depends_on:
       - mysql
+      - nginx
     volumes: 
       - .:/app:cached
+      - ./public:/app/public
       - readable-coder-bundle:/app/vendor/bundle
-    ports:
-      - "3000:3000"
+      - readable-corder-socket:/app/sockets
+    command: |
+     sh -c
+     "bundle install &&
+     bundle exec puma -b unix:///app/sockets/puma.sock"
   
+  nginx:
+    image: nginx:1.25
+    ports:
+      - "8080:80"
+    command: ["nginx"]
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./public:/app/public
+      - readable-corder-socket:/app/sockets
+        
   mysql:
     image: mysql:8.0.32
     command: ["--bind-address=0.0.0.0"]
@@ -31,5 +46,6 @@ services:
 
 volumes:
   readable-coder-bundle:
+  readable-corder-socket:
   mysql-data:
     

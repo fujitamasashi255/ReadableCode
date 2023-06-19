@@ -5,11 +5,11 @@ on:
     branches:
       - main
     paths:
-      - '/app/**'
-      - '/config/**'
-      - '/public/**'
-      - '/Gemfile.lock'
-      - '/db/schema.rb'
+      - 'app/**'
+      - 'config/**'
+      - 'public/**'
+      - 'Gemfile.lock'
+      - 'db/schema.rb'
 
 jobs:
   deploy:

@@ -13,15 +13,16 @@ services:
     depends_on:
       - mysql
       - nginx
+      - redis
     volumes: 
       - .:/app:cached
       - ./public:/app/public
       - readable-coder-bundle:/app/vendor/bundle
       - readable-corder-socket:/app/sockets
     command: |
-     sh -c
-     "bundle install &&
-     bundle exec puma -b unix:///app/sockets/puma.sock"
+      sh -c
+      "bundle install &&
+      bundle exec puma -b unix:///app/sockets/puma.sock"
   
   nginx:
     image: nginx:1.25
@@ -43,9 +44,17 @@ services:
       MYSQL_ROOT_PASSWORD: password
     volumes:
       - mysql-data:/var/lib/mysql
+        
+  redis:
+    image: "redis:7-alpine"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/var/lib/redis/datas
 
 volumes:
   readable-coder-bundle:
   readable-corder-socket:
   mysql-data:
+  redis-data:
     

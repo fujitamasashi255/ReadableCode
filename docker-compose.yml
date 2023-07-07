@@ -24,10 +24,11 @@ services:
       bundle exec puma -b unix:///app/tmp/sockets/puma.sock"
   
   nginx:
-    image: nginx:1.25
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
     ports:
       - "8080:80"
-    command: ["nginx"]
     depends_on:
       - app
     volumes:

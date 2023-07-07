@@ -3,10 +3,12 @@ Dockerfile-dev
 Dockerfile-prod
 .docker-compose.yml
 .git
+.gitignore
 
 log/*
 tmp/*
 storage/*
+config/master.key
 
 .bundle
 vendor/bundle

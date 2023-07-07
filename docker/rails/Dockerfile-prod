@@ -10,7 +10,3 @@ RUN bundle install
 
 COPY . /app
 RUN mkdir -p /app/tmp/sockets
-
-RUN bin/rails assets:precompile
-
-VOLUME /app/public

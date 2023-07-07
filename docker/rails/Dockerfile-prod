@@ -9,9 +9,8 @@ COPY Gemfile Gemfile.lock /app/
 RUN bundle install
 
 COPY . /app
+RUN mkdir -p /app/tmp/sockets
 
 RUN bin/rails assets:precompile
 
 VOLUME /app/public
-
-CMD ["bin/rails", "s", "-b", "0.0.0.0"]

@@ -1,4 +1,6 @@
 FROM ruby:3.2.2
+RUN apt-get update
+RUN apt-get install -y vim
 
 # bundlerを最新状態にする
 RUN gem install bundler

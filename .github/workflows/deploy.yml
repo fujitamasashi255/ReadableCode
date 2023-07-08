@@ -43,6 +43,21 @@ jobs:
         run: |
           touch $GITHUB_WORKSPACE/master.key
           echo ${{ secrets.RAILS_MASTER_KEY }} > $GITHUB_WORKSPACE/master.key
+      - name: Push rails image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.amazon-ecr-login.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.APP_NAME }}-${{ env.ENV_NAME }}-rails
+        run: |
+          docker build \
+            --cache-from=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            -f docker/rails/Dockerfile-prod \
+            -t $ECR_REPOSITORY:latest \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       - name: Push nginx image to ecr
         env:
           ECR_REGISTRY: ${{ steps.amazon-ecr-login.outputs.registry }}
@@ -55,19 +70,5 @@ jobs:
             -f docker/nginx/Dockerfile-prod \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      - name: Push rails image to ECR
-        env:
-          ECR_REGISTRY: ${{ steps.amazon-ecr-login.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.APP_NAME }}-${{ env.ENV_NAME }}-rails
-        run: |
-          docker build \
-            --cache-from=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            --build-arg BUILDKIT_INLINE_CACHE=1 \
-            -f docker/rails/Dockerfile-prod \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

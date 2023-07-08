@@ -39,6 +39,10 @@ jobs:
         id: amazon-ecr-login
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Create rails master key for build
+        run: |
+          touch $GITHUB_WORKSPACE/master.key
+          echo ${{ secrets.RAILS_MASTER_KEY }} > $GITHUB_WORKSPACE/master.key
       - name: Push nginx image to ecr
         env:
           ECR_REGISTRY: ${{ steps.amazon-ecr-login.outputs.registry }}

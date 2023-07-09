@@ -1,5 +1,5 @@
 FROM readable-coder-prod-rails:latest AS builder
-RUN --mount=type=secret,id=master_key,target=config/master.key,required=true rails assets:precompile RAILS_ENV=production
+RUN --mount=type=secret,id=master_key,target=config/master.key,required=true rails assets:precompile
 
 FROM nginx:1.25
 COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf

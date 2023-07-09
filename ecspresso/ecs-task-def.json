@@ -1,0 +1,87 @@
+{
+  "containerDefinitions": [
+    {
+      "cpu": 0,
+      "dependsOn": [
+        {
+          "condition": "START",
+          "containerName": "rails"
+        }
+      ],
+      "essential": true,
+      "image": "{{ tfstate `data.aws_ecr_repository.nginx.repository_url` }}:{{ must_env `IMAGE_TAG` }}",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "{{ tfstate `data.aws_cloudwatch_log_group.nginx.name` }}",
+          "awslogs-region": "{{ must_env `AWS_REGION` }}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "mountPoints": [
+        {
+          "containerPath": "/app/tmp/sockets",
+          "sourceVolume": "puma-socket"
+        }
+      ],
+      "name": "nginx",
+      "portMappings": [
+        {
+          "appProtocol": "",
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ]
+    },
+    {
+      "cpu": 0,
+      "essential": true,
+      "image": "{{ tfstate `data.aws_ecr_repository.rails.repository_url` }}:{{ must_env `IMAGE_TAG` }}",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "{{ tfstate `data.aws_cloudwatch_log_group.rails.name` }}",
+          "awslogs-region": "{{ must_env `AWS_REGION` }}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "mountPoints": [
+        {
+          "containerPath": "/app/tmp/sockets",
+          "sourceVolume": "puma-socket"
+        }
+      ],
+      "name": "rails",
+      "secrets": [
+        {
+          "name": "RAILS_MASTER_KEY",
+          "valueFrom": "/{{ must_env `APP_NAME` }}/{{ must_env `ENV_NAME` }}/RAILS_MASTER_KEY"
+        }
+      ]
+    }
+  ],
+  "cpu": "256",
+  "executionRoleArn": "{{ tfstate `data.aws_iam_role.ecs_task_execution.arn` }}",
+  "family": "{{ must_env `APP_NAME` }}-{{ must_env `ENV_NAME` }}",
+  "ipcMode": "",
+  "memory": "512",
+  "networkMode": "awsvpc",
+  "pidMode": "",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "tags": [
+    {
+      "key": "Name",
+      "value": "{{ must_env `APP_NAME` }}-{{ must_env `ENV_NAME` }}"
+    }
+  ],
+  "taskRoleArn": "{{ tfstate `data.aws_iam_role.ecs_task.arn` }}",
+  "volumes": [
+    {
+      "host": {},
+      "name": "puma-socket"
+    }
+  ]
+}

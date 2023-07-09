@@ -72,3 +72,10 @@ jobs:
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Download ecspresso
+        uses: kayac/ecspresso@v0
+        with:
+          version: v2.2.1
+      - name: Deploy to ecs
+        run: ecspresso deploy --config config.yaml
+        working-directory: ./ecspresso

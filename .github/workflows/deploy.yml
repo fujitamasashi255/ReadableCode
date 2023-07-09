@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #   - 'app/**'
-    #   - 'config/**'
-    #   - 'public/**'
-    #   - 'Gemfile.lock'
-    #   - 'db/schema.rb'
+    paths:
+      - 'app/**'
+      - 'config/**'
+      - 'public/**'
+      - 'Gemfile.lock'
+      - 'db/schema.rb'
 
 env:
   AWS_REGION: ap-northeast-1

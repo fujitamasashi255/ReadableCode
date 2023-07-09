@@ -9,12 +9,12 @@
         }
       ],
       "essential": true,
-      "image": "826277636554.dkr.ecr.ap-northeast-1.amazonaws.com/readable-coder-prod-nginx:latest",
+      "image": "{{ tfstate `data.aws_ecr_repository.nginx.repository_url` }}:{{ must_env `IMAGE_TAG` }}",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/readable-coder-prod/nginx",
-          "awslogs-region": "ap-northeast-1",
+          "awslogs-group": "{{ tfstate `data.aws_cloudwatch_log_group.nginx.name` }}",
+          "awslogs-region": "{{ must_env `AWS_REGION` }}",
           "awslogs-stream-prefix": "ecs"
         }
       },
@@ -37,12 +37,12 @@
     {
       "cpu": 0,
       "essential": true,
-      "image": "826277636554.dkr.ecr.ap-northeast-1.amazonaws.com/readable-coder-prod-rails:latest",
+      "image": "{{ tfstate `data.aws_ecr_repository.rails.repository_url` }}:{{ must_env `IMAGE_TAG` }}",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/readable-coder-prod/rails",
-          "awslogs-region": "ap-northeast-1",
+          "awslogs-group": "{{ tfstate `data.aws_cloudwatch_log_group.rails.name` }}",
+          "awslogs-region": "{{ must_env `AWS_REGION` }}",
           "awslogs-stream-prefix": "ecs"
         }
       },
@@ -56,14 +56,14 @@
       "secrets": [
         {
           "name": "RAILS_MASTER_KEY",
-          "valueFrom": "/readable-coder/prod/RAILS_MASTER_KEY"
+          "valueFrom": "/{{ must_env `APP_NAME` }}/{{ must_env `ENV_NAME` }}/RAILS_MASTER_KEY"
         }
       ]
     }
   ],
   "cpu": "256",
-  "executionRoleArn": "arn:aws:iam::826277636554:role/readable-coder-prod-ecs-task-execution",
-  "family": "readable-coder-prod",
+  "executionRoleArn": "{{ tfstate `data.aws_iam_role.ecs_task_execution.arn` }}",
+  "family": "{{ must_env `APP_NAME` }}-{{ must_env `ENV_NAME` }}",
   "ipcMode": "",
   "memory": "512",
   "networkMode": "awsvpc",
@@ -74,10 +74,10 @@
   "tags": [
     {
       "key": "Name",
-      "value": "readable-coder-prod"
+      "value": "{{ must_env `APP_NAME` }}-{{ must_env `ENV_NAME` }}"
     }
   ],
-  "taskRoleArn": "arn:aws:iam::826277636554:role/readable-coder-prod-ecs-task",
+  "taskRoleArn": "{{ tfstate `data.aws_iam_role.ecs_task.arn` }}",
   "volumes": [
     {
       "host": {},

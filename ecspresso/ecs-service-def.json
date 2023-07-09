@@ -26,18 +26,18 @@
     {
       "containerName": "nginx",
       "containerPort": 80,
-      "targetGroupArn": "arn:aws:elasticloadbalancing:ap-northeast-1:826277636554:targetgroup/readable-coder-prod/372272c4c07a5a01"
+      "targetGroupArn": "{{ tfstate `data.aws_lb_target_group.this.arn` }}"
     }
   ],
   "networkConfiguration": {
     "awsvpcConfiguration": {
       "assignPublicIp": "DISABLED",
       "securityGroups": [
-        "sg-0b1b90f911e0ef17a"
+        "{{ tfstate `data.aws_security_group.vpc.id` }}"
       ],
       "subnets": [
-        "subnet-09d9bafb4830ca5aa",
-        "subnet-0fa5fa900fd0ee2eb"
+        "{{ tfstate `data.aws_subnet.private['a'].id` }}",
+        "{{ tfstate `data.aws_subnet.private['a'].id` }}"
       ]
     }
   },
@@ -50,7 +50,7 @@
   "tags": [
     {
       "key": "Name",
-      "value": "readable-coder-prod"
+      "value": "{{ must_env `APP_NAME` }}-{{ must_env `ENV_NAME` }}"
     }
   ]
 }

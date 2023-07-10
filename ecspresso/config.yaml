@@ -3,7 +3,7 @@ cluster: readable-coder-prod
 service: readable-coder-prod
 service_definition: ecs-service-def.json
 task_definition: ecs-task-def.json
-timeout: "10m0s"
+timeout: 10m0s
 plugins:
   - name: tfstate
     config:

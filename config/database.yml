@@ -19,7 +19,7 @@ default: &default
   username: <%= ENV["MYSQL_USERNAME"] || "app" %>
   password: <%= ENV["MYSQL_PASSWORD"] || "password" %>
   host: <%= ENV["MYSQL_HOST"] || "127.0.0.1" %>
-  port: <% ENV["MYSQL_PORT"] || "3306" %>
+  port: <%= ENV["MYSQL_PORT"] || "3306" %>
 
 development:
   <<: *default
@@ -54,6 +54,8 @@ test:
 #
 production:
   <<: *default
-  database: readable_coder_production
-  username: readable_coder
-  password: <%= ENV["READABLE_CODER_DATABASE_PASSWORD"] %>
+  database: <%=  Rails.application.credentials.dig(:db, :database) %>
+  username: <%=  Rails.application.credentials.dig(:db, :username) %>
+  password: <%=  Rails.application.credentials.dig(:db, :password) %>
+  host: <%= Rails.application.credentials.dig(:db, :host) %>
+  port: 3306

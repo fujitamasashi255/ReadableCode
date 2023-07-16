@@ -13,12 +13,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Docker Compose
-        uses: isbang/compose-action@v1.4.1
+        uses: yu-ichiro/spin-up-docker-compose-action@v1
         with:
-          compose-file: "./docker-compose.yml"
-          down-flags: "--volumes"
-      - name: Setup test environment
-        run: "docker compose exec -T app bin/setup"
+          file: "./docker-compose.yml"
+      - name: Setup test env
+        run: "docker compose exec -T app bin/setup_test_env"
       - name: Run ci
         run: "docker compose exec -T app bin/ci"
     

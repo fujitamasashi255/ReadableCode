@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+puts "Gemのインストール"
+system("bundle install")
+
+puts "テスト環境のDBを準備"
+system("bin/rails db:create RAILS_ENV=test")
+system("bin/rails db:schema:load RAILS_ENV=test")

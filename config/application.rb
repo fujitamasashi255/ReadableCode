@@ -26,5 +26,12 @@ module ReadableCoder
     config.generators.after_generate do |files|
       system("bundle exec rubocop --auto-correct-all " + files.join(" "), exception: true)
     end
+
+    config.generators do |g|  # ここから追記
+      g.assets true
+      g.helper false
+      g.skip_routes true
+      g.test_framework false
+    end
   end
 end

@@ -38,7 +38,7 @@
       ],
       "subnets": [
         "{{ tfstate `data.aws_subnet.private['a'].id` }}",
-        "{{ tfstate `data.aws_subnet.private['a'].id` }}"
+        "{{ tfstate `data.aws_subnet.private['c'].id` }}"
       ]
     }
   },

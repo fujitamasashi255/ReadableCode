@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #   - 'app/**'
-    #   - 'config/**'
-    #   - 'public/**'
-    #   - 'Gemfile.lock'
-    #   - 'db/schema.rb'
+    paths:
+      - 'app/**'
+      - 'config/**'
+      - 'public/**'
+      - 'Gemfile.lock'
+      - 'db/schema.rb'
 
 env:
   AWS_REGION: ap-northeast-1
@@ -48,7 +48,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.amazon-ecr-login.outputs.registry }}
           ECR_REPOSITORY: ${{ env.APP_NAME }}-${{ env.ENV_NAME }}-rails
         run: |
-          docker build \
+          docker buildx build \
+            --secret id=master_key,src=master.key \
             --cache-from=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
             -f docker/rails/Dockerfile-prod \

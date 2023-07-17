@@ -10,6 +10,9 @@ COPY Gemfile Gemfile.lock /app/
 RUN bundle install
 
 COPY . /app
+
+# to create tailwind.css under app/assets/builds/
+RUN --mount=type=secret,id=master_key,target=config/master.key,required=true rails assets:precompile
 RUN mkdir -p /app/tmp/sockets
 RUN mkdir -p /app/tmp/pids
 CMD ["bundle", "exec", "puma", "-b", "unix:///app/tmp/sockets/puma.sock"]

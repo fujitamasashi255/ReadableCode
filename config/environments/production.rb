@@ -86,4 +86,12 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # Session store
+  config.session_store :redis_store,
+  servers: ["redis://cache.readablecoder.internal:6379/0/session"],
+  expire_after: 90.minutes,
+  key: "_#{Rails.application.class.module_parent_name.downcase}_session",
+  threadsafe: true,
+  secure: false
 end

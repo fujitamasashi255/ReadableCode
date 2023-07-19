@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'app/**'
-      - 'config/**'
-      - 'public/**'
-      - 'Gemfile.lock'
-      - 'db/schema.rb'
+    # paths:
+    #   - 'app/**'
+    #   - 'config/**'
+    #   - 'public/**'
+    #   - 'Gemfile.lock'
+    #   - 'db/schema.rb'
 
 env:
   AWS_REGION: ap-northeast-1
@@ -20,10 +20,6 @@ env:
 jobs:
   deploy:
     name: Deploy app to AWS Fargate
-    env: 
-      ENV_NAME: prod
-      AWS_REGION: ap-northeast-1
-      IMAGE_TAG: ${{ github.sha }}
     runs-on: ubuntu-latest
     steps:
       - name: Configure aws credentials for prod
@@ -84,11 +80,11 @@ jobs:
         run: |
           ecspresso run --config config.yaml \
             --latest-task-definition \
-            --watch-container=rails \
-            --overrides='{"containerOverrides": [ \
-                {"name":"nginx", "command":["nginx", "-v"]}, \
-                {"name":"rails", "command":["bin/rails", "db:migrate"]}
-              ]}'
+            --watch-container=nginx \
+            --overrides='{"containerOverrides": [ 
+              {"name":"nginx", "command":["nginx", "-v"]}, 
+              {"name":"rails", "command":["ruby", "-v"]}
+            ]}'
         working-directory: ./ecspresso
       - name: Deploy to ecs
         run: ecspresso deploy --config config.yaml --latest-task-definition

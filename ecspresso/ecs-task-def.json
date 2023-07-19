@@ -65,7 +65,7 @@
   "executionRoleArn": "{{ tfstate `data.aws_iam_role.ecs_task_execution.arn` }}",
   "family": "{{ must_env `APP_NAME` }}-{{ must_env `ENV_NAME` }}",
   "ipcMode": "",
-  "memory": "512",
+  "memory": "1024",
   "networkMode": "awsvpc",
   "pidMode": "",
   "requiresCompatibilities": [

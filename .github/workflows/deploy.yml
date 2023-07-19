@@ -77,6 +77,19 @@ jobs:
         uses: kayac/ecspresso@v2
         with:
           version: v2.2.1
+      - name: Register task definition
+        run: ecspresso register --config config.yaml
+        working-directory: ./ecspresso
+      - name: Migrate database
+        run: |
+          ecspresso run --config config.yaml \
+            --latest-task-definition \
+            --watch-container=rails \
+            --overrides='{"containerOverrides": [ \
+                {"name":"nginx", "command":["nginx", "-v"]}, \
+                {"name":"rails", "command":["bin/rails", "db:migrate"]}
+              ]}'
+        working-directory: ./ecspresso
       - name: Deploy to ecs
-        run: ecspresso deploy --config config.yaml
+        run: ecspresso deploy --config config.yaml --latest-task-definition
         working-directory: ./ecspresso

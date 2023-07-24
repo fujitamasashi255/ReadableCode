@@ -1,85 +1,85 @@
-name: deploy
+# name: deploy
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-env:
-  AWS_REGION: ap-northeast-1
-  IMAGE_TAG: ${{ github.sha }}
-  APP_NAME: readable-coder
-  ENV_NAME: prod
+# env:
+#   AWS_REGION: ap-northeast-1
+#   IMAGE_TAG: ${{ github.sha }}
+#   APP_NAME: readable-coder
+#   ENV_NAME: prod
 
-jobs:
-  deploy:
-    name: Deploy app to AWS Fargate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Configure aws credentials for prod
-        uses: aws-actions/configure-aws-credentials@v2
-        with: 
-          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: prod-deployer
-          role-duration-seconds: 1800
-      - name: Login ECR
-        uses: aws-actions/amazon-ecr-login@v1
-        id: amazon-ecr-login
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Create rails master key for build
-        run: |
-          touch $GITHUB_WORKSPACE/master.key
-          echo ${{ secrets.RAILS_MASTER_KEY }} > $GITHUB_WORKSPACE/master.key
-      - name: Push rails image to ECR
-        env:
-          ECR_REGISTRY: ${{ steps.amazon-ecr-login.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.APP_NAME }}-${{ env.ENV_NAME }}-rails
-        run: |
-          docker buildx build \
-            --secret id=master_key,src=master.key \
-            --cache-from=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            --build-arg BUILDKIT_INLINE_CACHE=1 \
-            -f docker/rails/Dockerfile-prod \
-            -t $ECR_REPOSITORY:latest \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      - name: Push nginx image to ecr
-        env:
-          ECR_REGISTRY: ${{ steps.amazon-ecr-login.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.APP_NAME }}-${{ env.ENV_NAME }}-nginx
-        run: |
-          docker buildx build \
-            --secret id=master_key,src=master.key \
-            --cache-from=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            --build-arg BUILDKIT_INLINE_CACHE=1 . \
-            -f docker/nginx/Dockerfile-prod \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      - name: Download ecspresso
-        uses: kayac/ecspresso@v2
-        with:
-          version: v2.2.1
-      - name: Register task definition
-        run: ecspresso register --config config.yaml
-        working-directory: ./ecspresso
-      - name: Migrate database
-        run: |
-          ecspresso run --config config.yaml \
-            --latest-task-definition \
-            --watch-container=rails \
-            --overrides='{"containerOverrides": [ 
-              {"name":"nginx", "command":["nginx", "-v"]}, 
-              {"name":"rails", "command":["bin/rails", "db:migrate"]}
-            ]}'
-        working-directory: ./ecspresso
-      - name: Deploy to ecs
-        run: ecspresso deploy --config config.yaml --latest-task-definition
-        working-directory: ./ecspresso
+# jobs:
+#   deploy:
+#     name: Deploy app to AWS Fargate
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Configure aws credentials for prod
+#         uses: aws-actions/configure-aws-credentials@v2
+#         with: 
+#           aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ${{ env.AWS_REGION }}
+#           role-to-assume: prod-deployer
+#           role-duration-seconds: 1800
+#       - name: Login ECR
+#         uses: aws-actions/amazon-ecr-login@v1
+#         id: amazon-ecr-login
+#       - name: Checkout
+#         uses: actions/checkout@v3
+#       - name: Create rails master key for build
+#         run: |
+#           touch $GITHUB_WORKSPACE/master.key
+#           echo ${{ secrets.RAILS_MASTER_KEY }} > $GITHUB_WORKSPACE/master.key
+#       - name: Push rails image to ECR
+#         env:
+#           ECR_REGISTRY: ${{ steps.amazon-ecr-login.outputs.registry }}
+#           ECR_REPOSITORY: ${{ env.APP_NAME }}-${{ env.ENV_NAME }}-rails
+#         run: |
+#           docker buildx build \
+#             --secret id=master_key,src=master.key \
+#             --cache-from=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
+#             --build-arg BUILDKIT_INLINE_CACHE=1 \
+#             -f docker/rails/Dockerfile-prod \
+#             -t $ECR_REPOSITORY:latest \
+#             -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+#             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+#             .
+#           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+#           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#       - name: Push nginx image to ecr
+#         env:
+#           ECR_REGISTRY: ${{ steps.amazon-ecr-login.outputs.registry }}
+#           ECR_REPOSITORY: ${{ env.APP_NAME }}-${{ env.ENV_NAME }}-nginx
+#         run: |
+#           docker buildx build \
+#             --secret id=master_key,src=master.key \
+#             --cache-from=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
+#             --build-arg BUILDKIT_INLINE_CACHE=1 . \
+#             -f docker/nginx/Dockerfile-prod \
+#             -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+#             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+#           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#       - name: Download ecspresso
+#         uses: kayac/ecspresso@v2
+#         with:
+#           version: v2.2.1
+#       - name: Register task definition
+#         run: ecspresso register --config config.yaml
+#         working-directory: ./ecspresso
+#       - name: Migrate database
+#         run: |
+#           ecspresso run --config config.yaml \
+#             --latest-task-definition \
+#             --watch-container=rails \
+#             --overrides='{"containerOverrides": [ 
+#               {"name":"nginx", "command":["nginx", "-v"]}, 
+#               {"name":"rails", "command":["bin/rails", "db:migrate"]}
+#             ]}'
+#         working-directory: ./ecspresso
+#       - name: Deploy to ecs
+#         run: ecspresso deploy --config config.yaml --latest-task-definition
+#         working-directory: ./ecspresso

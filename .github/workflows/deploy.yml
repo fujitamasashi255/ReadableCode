@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #   - 'app/**'
-    #   - 'config/**'
-    #   - 'public/**'
-    #   - 'Gemfile.lock'
-    #   - 'db/schema.rb'
 
 env:
   AWS_REGION: ap-northeast-1
@@ -80,10 +74,10 @@ jobs:
         run: |
           ecspresso run --config config.yaml \
             --latest-task-definition \
-            --watch-container=nginx \
+            --watch-container=rails \
             --overrides='{"containerOverrides": [ 
               {"name":"nginx", "command":["nginx", "-v"]}, 
-              {"name":"rails", "command":["ruby", "-v"]}
+              {"name":"rails", "command":["bin/rails", "db:migrate"]}
             ]}'
         working-directory: ./ecspresso
       - name: Deploy to ecs

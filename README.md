@@ -9,3 +9,6 @@
 
 ## Tests and CI
 1. `bin/ci` contains all the tests and checks for the app
+
+# AWS Architecture Diagram
+![](./docs/aws_architecture_diagram.drawio.svg)
